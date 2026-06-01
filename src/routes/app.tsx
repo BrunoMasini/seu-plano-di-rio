@@ -8,6 +8,7 @@ import { TasksPanel } from "@/components/panels/TasksPanel";
 import { GoalsPanel } from "@/components/panels/GoalsPanel";
 import { RemindersPanel } from "@/components/panels/RemindersPanel";
 import { NotesPanel } from "@/components/panels/NotesPanel";
+import { ProjectsPanel } from "@/components/panels/ProjectsPanel";
 
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Sua mentoria — North Note" }] }),
