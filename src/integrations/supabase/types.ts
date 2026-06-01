@@ -74,6 +74,39 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          name: string
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reminders: {
         Row: {
           created_at: string
@@ -108,6 +141,7 @@ export type Database = {
           due_date: string | null
           id: string
           notes: string | null
+          project_id: string | null
           title: string
           user_id: string
         }
@@ -117,6 +151,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           notes?: string | null
+          project_id?: string | null
           title: string
           user_id: string
         }
@@ -126,10 +161,19 @@ export type Database = {
           due_date?: string | null
           id?: string
           notes?: string | null
+          project_id?: string | null
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -140,6 +184,7 @@ export type Database = {
     }
     Enums: {
       goal_horizon: "short" | "medium" | "long"
+      project_status: "active" | "paused" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -268,6 +313,7 @@ export const Constants = {
   public: {
     Enums: {
       goal_horizon: ["short", "medium", "long"],
+      project_status: ["active", "paused", "done"],
     },
   },
 } as const
