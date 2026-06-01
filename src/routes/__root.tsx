@@ -57,7 +57,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Norte — sua mentoria, organizada" },
+      { title: "North Note — sua mentoria, organizada" },
       { name: "description", content: "Tarefas, metas, lembretes e notas para sua jornada de mentoria." },
     ],
     links: [

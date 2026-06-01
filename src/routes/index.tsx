@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Norte — clareza para sua mentoria" },
+      { title: "North Note — clareza para sua mentoria" },
       { name: "description", content: "Saiba o que fazer hoje e onde quer chegar. Tarefas, metas, lembretes e notas em um só lugar." },
     ],
   }),
@@ -22,7 +22,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="font-display text-2xl tracking-tight">Norte<span className="text-muted-foreground">.</span></div>
+        <div className="font-display text-2xl tracking-tight">North Note<span className="text-muted-foreground">.</span></div>
         <Link to="/login" className="text-sm underline-offset-4 hover:underline">Entrar</Link>
       </header>
 
@@ -63,7 +63,7 @@ function Landing() {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Norte
+          © {new Date().getFullYear()} North Note
         </div>
       </footer>
     </div>

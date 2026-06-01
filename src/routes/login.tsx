@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Entrar — Norte" }] }),
+  head: () => ({ meta: [{ title: "Entrar — North Note" }] }),
   component: LoginPage,
 });
 
@@ -55,7 +55,7 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link to="/" className="font-display text-2xl">Norte<span className="text-muted-foreground">.</span></Link>
+        <Link to="/" className="font-display text-2xl">North Note<span className="text-muted-foreground">.</span></Link>
       </header>
       <main className="mx-auto flex max-w-md flex-col px-6 pt-16">
         <h1 className="font-display text-5xl">{mode === "signin" ? "Bem-vindo de volta" : "Crie sua conta"}</h1>
