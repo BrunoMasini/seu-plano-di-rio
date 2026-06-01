@@ -1,11 +1,24 @@
-## Scope
-Rename the app from "Norte" to "North Note" across all user-facing strings and page metadata.
+## Escopo
+Adicionar uma aba **Projetos** ao dashboard, permitindo criar, listar, editar e excluir projetos. Tarefas existentes ganham vínculo opcional com um projeto.
 
-## Files to update
-- `src/routes/__root.tsx` — root `<title>` meta tag
-- `src/routes/index.tsx` — landing page title, logo, footer
-- `src/routes/login.tsx` — page title, logo
-- `src/routes/app.tsx` — page title, header logo
+## Banco de dados (migration)
+- Criar enum `project_status` com valores: `active`, `paused`, `done`.
+- Criar tabela `public.projects`:
+  - `name` (text, obrigatório)
+  - `description` (text, opcional)
+  - `status` (project_status, default `active`)
+  - `due_date` (date, opcional)
+  - campos padrão (id, user_id, created_at, updated_at)
+- GRANTs para `authenticated` e `service_role`; RLS com 4 policies escopadas por `auth.uid()`.
+- Trigger de `updated_at`.
+- Adicionar coluna `project_id uuid` (nullable) em `public.tasks` para vincular tarefa a um projeto.
 
-## Change summary
-Replace every occurrence of `Norte` with `North Note` (including titles, logo text, and footer copyright). The trailing period styling (`North Note.`) stays the same.
+## Frontend
+- Novo arquivo `src/components/panels/ProjectsPanel.tsx`:
+  - Formulário inline para criar projeto (nome, descrição, status, prazo).
+  - Lista de projetos em cards mostrando nome, descrição, badge de status, prazo e ações (editar status, excluir).
+- `src/routes/app.tsx`: adicionar nova aba **Projetos** entre "Metas" e "Agenda".
+- `src/components/panels/TasksPanel.tsx`: adicionar seletor opcional de projeto ao criar tarefa e exibir o nome do projeto vinculado em cada tarefa.
+
+## Estilo
+Mantém a estética Paper & Ink existente (tipografia Instrument Serif para títulos, cards minimalistas, sem cores fora dos tokens semânticos).

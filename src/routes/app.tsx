@@ -8,6 +8,7 @@ import { TasksPanel } from "@/components/panels/TasksPanel";
 import { GoalsPanel } from "@/components/panels/GoalsPanel";
 import { RemindersPanel } from "@/components/panels/RemindersPanel";
 import { NotesPanel } from "@/components/panels/NotesPanel";
+import { ProjectsPanel } from "@/components/panels/ProjectsPanel";
 
 export const Route = createFileRoute("/app")({
   head: () => ({ meta: [{ title: "Sua mentoria — North Note" }] }),
@@ -48,6 +49,7 @@ function AppPage() {
           <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start gap-2 p-0 h-auto">
             {[
               ["tasks", "Hoje"],
+              ["projects", "Projetos"],
               ["goals", "Metas"],
               ["reminders", "Agenda"],
               ["notes", "Notas"],
@@ -62,6 +64,7 @@ function AppPage() {
             ))}
           </TabsList>
           <TabsContent value="tasks" className="mt-8"><TasksPanel userId={user.id} /></TabsContent>
+          <TabsContent value="projects" className="mt-8"><ProjectsPanel userId={user.id} /></TabsContent>
           <TabsContent value="goals" className="mt-8"><GoalsPanel userId={user.id} /></TabsContent>
           <TabsContent value="reminders" className="mt-8"><RemindersPanel userId={user.id} /></TabsContent>
           <TabsContent value="notes" className="mt-8"><NotesPanel userId={user.id} /></TabsContent>
