@@ -10,7 +10,7 @@ import { RemindersPanel } from "@/components/panels/RemindersPanel";
 import { NotesPanel } from "@/components/panels/NotesPanel";
 
 export const Route = createFileRoute("/app")({
-  head: () => ({ meta: [{ title: "Sua mentoria — Norte" }] }),
+  head: () => ({ meta: [{ title: "Sua mentoria — North Note" }] }),
   component: AppPage,
 });
 
@@ -32,7 +32,7 @@ function AppPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-display text-2xl">Norte<span className="text-muted-foreground">.</span></Link>
+          <Link to="/" className="font-display text-2xl">North Note<span className="text-muted-foreground">.</span></Link>
           <Button variant="ghost" size="sm" onClick={() => supabase.auth.signOut()}>Sair</Button>
         </div>
       </header>
