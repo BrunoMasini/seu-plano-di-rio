@@ -43,13 +43,14 @@ export function useAppSettings() {
   return { settings, loading };
 }
 
-export async function useIsAdmin(userId: string | undefined): Promise<boolean> {
-  if (!userId) return false;
-  const { data } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  return !!data;
+export function useIsAdmin(userId: string | undefined) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!userId) { setIsAdmin(false); return; }
+    let mounted = true;
+    supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle()
+      .then(({ data }) => { if (mounted) setIsAdmin(!!data); });
+    return () => { mounted = false; };
+  }, [userId]);
+  return isAdmin;
 }
