@@ -1,24 +1,36 @@
 ## Escopo
-Adicionar uma aba **Projetos** ao dashboard, permitindo criar, listar, editar e excluir projetos. Tarefas existentes ganham vínculo opcional com um projeto.
+
+1. **Portal admin** restrito ao email `fradmasini@gmail.com` (verificação por role no banco, nunca por email no client).
+2. **Configurações globais** editáveis pelo admin: nome do app, frase de boas-vindas, subtítulo, e rótulos das 5 abas (Hoje, Projetos, Metas, Agenda, Notas). Edição reflete para todos os usuários.
+3. **Aba "Concluídas"** para todos os usuários: tarefas marcadas como feitas saem de "Hoje" e aparecem em "Concluídas", onde podem ser excluídas (ou reabertas).
 
 ## Banco de dados (migration)
-- Criar enum `project_status` com valores: `active`, `paused`, `done`.
-- Criar tabela `public.projects`:
-  - `name` (text, obrigatório)
-  - `description` (text, opcional)
-  - `status` (project_status, default `active`)
-  - `due_date` (date, opcional)
-  - campos padrão (id, user_id, created_at, updated_at)
-- GRANTs para `authenticated` e `service_role`; RLS com 4 policies escopadas por `auth.uid()`.
-- Trigger de `updated_at`.
-- Adicionar coluna `project_id uuid` (nullable) em `public.tasks` para vincular tarefa a um projeto.
+
+- Enum `app_role` (`admin`, `user`) + tabela `public.user_roles` (user_id, role) com função `security definer` `has_role(_user_id, _role)` — padrão obrigatório de roles do projeto.
+- Tabela `public.app_settings` (linha única, id fixo) com colunas: `app_name`, `tagline`, `greeting`, `tab_today`, `tab_projects`, `tab_goals`, `tab_reminders`, `tab_notes`, `updated_at`.
+  - RLS: SELECT liberado para `authenticated` (todos leem); UPDATE só para `has_role(auth.uid(),'admin')`.
+  - Seed da linha com os valores atuais ("North Note", "Bom te ver de novo.", etc.).
+- Seed inicial: inserir role `admin` para o usuário cujo email é `fradmasini@gmail.com` (via subquery em `auth.users`).
+- GRANTs em ambas as tabelas.
 
 ## Frontend
-- Novo arquivo `src/components/panels/ProjectsPanel.tsx`:
-  - Formulário inline para criar projeto (nome, descrição, status, prazo).
-  - Lista de projetos em cards mostrando nome, descrição, badge de status, prazo e ações (editar status, excluir).
-- `src/routes/app.tsx`: adicionar nova aba **Projetos** entre "Metas" e "Agenda".
-- `src/components/panels/TasksPanel.tsx`: adicionar seletor opcional de projeto ao criar tarefa e exibir o nome do projeto vinculado em cada tarefa.
+
+- **`src/lib/settings.ts`** — hook `useAppSettings()` que carrega `app_settings` uma vez e expõe os rótulos/textos. Usado no header, na home e nas abas.
+- **`src/routes/__root.tsx`, `src/routes/app.tsx`, `src/routes/login.tsx`** — substituir literais "North Note", "Bom te ver de novo.", labels das abas e títulos das `<head>` pelos valores de `useAppSettings()`.
+- **`src/routes/admin.tsx`** — nova rota protegida:
+  - Redireciona para `/login` se não autenticado.
+  - Consulta `has_role` (RPC) e bloqueia com mensagem "Acesso restrito" se não admin.
+  - Formulário simples (inputs Paper & Ink) para editar todos os campos de `app_settings` e botão Salvar.
+  - Link discreto para `/admin` aparece no header de `/app` apenas quando o usuário logado for admin.
+- **`src/components/panels/TasksPanel.tsx`** — filtrar para mostrar apenas tarefas `completed = false` na aba "Hoje". Manter criação/checkbox.
+- **`src/components/panels/CompletedPanel.tsx`** (novo) — lista de tarefas `completed = true` com ações: reabrir (desmarcar) e excluir.
+- **`src/routes/app.tsx`** — adicionar 6ª aba "Concluídas" após "Notas", usando rótulo das settings (`tab_today` etc.) e um rótulo fixo "Concluídas" (ou também configurável; mantemos fixo para simplicidade).
+
+## Segurança
+
+- Toda checagem de admin é feita server-side via RLS (`has_role` em policies de `app_settings` UPDATE). O client apenas esconde a UI; tentativas de update sem role falham no banco.
+- Nenhum email é hardcoded no frontend.
 
 ## Estilo
-Mantém a estética Paper & Ink existente (tipografia Instrument Serif para títulos, cards minimalistas, sem cores fora dos tokens semânticos).
+
+Mantém Paper & Ink: tipografia Instrument Serif para títulos, inputs minimalistas, sem cores fora dos tokens semânticos.

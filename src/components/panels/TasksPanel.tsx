@@ -29,7 +29,7 @@ export function TasksPanel({ userId }: { userId: string }) {
   const load = async () => {
     const [tRes, pRes] = await Promise.all([
       supabase.from("tasks").select("*")
-        .order("completed", { ascending: true })
+        .eq("completed", false)
         .order("created_at", { ascending: false }),
       supabase.from("projects").select("id,name").order("created_at", { ascending: false }),
     ]);
