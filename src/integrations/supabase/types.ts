@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          app_name: string
+          greeting: string
+          id: string
+          tab_completed: string
+          tab_goals: string
+          tab_notes: string
+          tab_projects: string
+          tab_reminders: string
+          tab_today: string
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          app_name?: string
+          greeting?: string
+          id?: string
+          tab_completed?: string
+          tab_goals?: string
+          tab_notes?: string
+          tab_projects?: string
+          tab_reminders?: string
+          tab_today?: string
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          app_name?: string
+          greeting?: string
+          id?: string
+          tab_completed?: string
+          tab_goals?: string
+          tab_notes?: string
+          tab_projects?: string
+          tab_reminders?: string
+          tab_today?: string
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           created_at: string
@@ -175,14 +217,42 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "user"
       goal_horizon: "short" | "medium" | "long"
       project_status: "active" | "paused" | "done"
     }
@@ -312,6 +382,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       goal_horizon: ["short", "medium", "long"],
       project_status: ["active", "paused", "done"],
     },
