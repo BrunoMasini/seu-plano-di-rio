@@ -16,7 +16,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,12 +30,18 @@ function LoginPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: { emailRedirectTo: window.location.origin + "/app" },
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { shouldCreateUser: true, emailRedirectTo: window.location.origin + "/definir-senha" },
         });
         if (error) throw error;
-        toast.success("Conta criada! Verifique seu email.");
+        toast.success("Enviamos um link para seu email para criar sua senha.");
+      } else if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/definir-senha",
+        });
+        if (error) throw error;
+        toast.success("Enviamos um link para redefinir sua senha.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -58,9 +64,9 @@ function LoginPage() {
         <Link to="/" className="font-display text-2xl">North Note<span className="text-muted-foreground">.</span></Link>
       </header>
       <main className="mx-auto flex max-w-md flex-col px-6 pt-16">
-        <h1 className="font-display text-5xl">{mode === "signin" ? "Bem-vindo de volta" : "Crie sua conta"}</h1>
+        <h1 className="font-display text-5xl">{mode === "signin" ? "Bem-vindo de volta" : mode === "signup" ? "Primeiro acesso" : "Recuperar senha"}</h1>
         <p className="mt-2 text-muted-foreground">
-          {mode === "signin" ? "Entre para continuar sua jornada." : "Comece sua mentoria com clareza."}
+          {mode === "signin" ? "Entre para continuar sua jornada." : "Informe seu email e enviaremos um link para criar sua senha."}
         </p>
 
         <Button onClick={google} variant="outline" className="mt-8 h-11">
@@ -76,12 +82,14 @@ function LoginPage() {
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5 h-11" />
           </div>
+          {mode === "signin" && (
           <div>
             <Label htmlFor="password">Senha</Label>
             <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5 h-11" />
           </div>
+          )}
           <Button type="submit" disabled={loading} className="h-11 w-full">
-            {loading ? "..." : mode === "signin" ? "Entrar" : "Criar conta"}
+            {loading ? "..." : mode === "signin" ? "Entrar" : "Enviar link"}
           </Button>
         </form>
 
@@ -90,8 +98,13 @@ function LoginPage() {
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           className="mt-6 text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
-          {mode === "signin" ? "Não tem conta? Criar uma" : "Já tem conta? Entrar"}
+          {mode === "signin" ? "Primeiro acesso? Cadastre seu email" : "Já tem senha? Entrar"}
         </button>
+        {mode === "signin" && (
+          <button type="button" onClick={() => setMode("forgot")} className="mt-2 text-sm text-muted-foreground underline-offset-4 hover:underline">
+            Esqueci minha senha
+          </button>
+        )}
       </main>
     </div>
   );
