@@ -20,6 +20,14 @@ import { ProjectsPanel } from "@/components/panels/ProjectsPanel";
 import { CompletedPanel } from "@/components/panels/CompletedPanel";
 
 export const Route = createFileRoute("/app")({
+  head: () => ({ meta: [
+    { title: "Minha organização — North Note" },
+    { name: "description", content: "Organize tarefas, horários, projetos e metas nos seus espaços do North Note." },
+    { property: "og:title", content: "Minha organização — North Note" },
+    { property: "og:description", content: "Seus estudos, trabalho e dia a dia organizados em um só lugar." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AppPage,
 });
 
@@ -87,7 +95,8 @@ function AppPage() {
     );
   }
 
-  const active = workspaces.find((w) => w.id === activeId) ?? workspaces[0]!;
+  const active = workspaces.find((w) => w.id === activeId) ?? workspaces[0];
+  if (!active) return null;
   const wsId = active.id;
 
   return (

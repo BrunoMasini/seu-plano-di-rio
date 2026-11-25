@@ -11,7 +11,14 @@ import { Mail } from "lucide-react";
 import { SUPPORT_EMAIL } from "@/components/SupportDialog";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Entrar — North Note" }] }),
+  head: () => ({ meta: [
+    { title: "Entrar — North Note" },
+    { name: "description", content: "Entre no North Note para organizar seus estudos, trabalho e rotina pessoal." },
+    { property: "og:title", content: "Entrar — North Note" },
+    { property: "og:description", content: "Acesse seus espaços de organização no North Note." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: LoginPage,
 });
 

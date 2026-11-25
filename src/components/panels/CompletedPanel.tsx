@@ -1,17 +1,18 @@
+import { storedSchedule, scheduleLabel } from "@/lib/schedule";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-type Task = { id: string; title: string; completed: boolean; project_id: string | null };
+type Task = { id: string; title: string; completed: boolean; project_id: string | null; due_date: string | null; start_time: string | null; end_time: string | null };
 
 export function CompletedPanel({ workspaceId }: { userId: string; workspaceId: string }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    const { data, error } = await supabase.from("tasks").select("id,title,completed,project_id")
+    const { data, error } = await supabase.from("tasks").select("id,title,completed,project_id,due_date,start_time,end_time")
       .eq("workspace_id", workspaceId).eq("completed", true).order("created_at", { ascending: false });
     if (error) toast.error(error.message);
     else setTasks((data as Task[]) ?? []);
@@ -37,7 +38,7 @@ export function CompletedPanel({ workspaceId }: { userId: string; workspaceId: s
       )}
       {tasks.map((t) => (
         <li key={t.id} className="group flex items-center gap-4 py-4">
-          <span className="flex-1 min-w-0 text-muted-foreground line-through">{t.title}</span>
+          <div className="flex-1 min-w-0 text-muted-foreground"><span className="line-through">{t.title}</span>{t.due_date && <p className="text-xs">{scheduleLabel(storedSchedule(t.due_date, t.start_time, t.end_time))}</p>}</div>
           <Button variant="ghost" size="sm" onClick={() => reopen(t.id)} className="">
             <RotateCcw className="h-4 w-4 mr-1" /> Reabrir
           </Button>

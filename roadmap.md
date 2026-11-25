@@ -1,0 +1,2 @@
+- [x] Horários opcionais em tarefas, metas, projetos e agenda, com criação, edição e exportação para calendários.
+- [x] Testar intervalos, horário pontual, dia inteiro e persistência na conta conectada.

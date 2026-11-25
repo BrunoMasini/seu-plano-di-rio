@@ -1,3 +1,6 @@
+import { AddToCalendar } from "@/components/AddToCalendar";
+import { ScheduleFields } from "@/components/ScheduleFields";
+import { emptySchedule, storedSchedule, scheduleColumns, scheduleError, scheduleEvent, scheduleLabel } from "@/lib/schedule";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -15,6 +18,8 @@ type Project = {
   description: string | null;
   status: Status;
   due_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
 };
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -29,7 +34,7 @@ export function ProjectsPanel({ userId, workspaceId }: { userId: string; workspa
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<Status>("active");
-  const [dueDate, setDueDate] = useState("");
+  const [schedule, setSchedule] = useState(emptySchedule);
   const [open, setOpen] = useState(false);
 
   const load = async () => {
@@ -48,21 +53,22 @@ export function ProjectsPanel({ userId, workspaceId }: { userId: string; workspa
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+    const invalid = scheduleError(schedule); if (invalid) return toast.error(invalid);
     const { error } = await supabase.from("projects").insert({
       user_id: userId,
       workspace_id: workspaceId,
       name: name.trim(),
       description: description.trim() || null,
       status,
-      due_date: dueDate || null,
+      due_date: schedule.date || null, ...scheduleColumns(schedule),
     });
     if (error) return toast.error(error.message);
-    setName(""); setDescription(""); setStatus("active"); setDueDate(""); setOpen(false);
+    setName(""); setDescription(""); setStatus("active"); setSchedule(emptySchedule()); setOpen(false);
     load();
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from("projects").delete().eq("id", id);
+    const { error } = await supabase.from("projects").delete().eq("id", id).eq("workspace_id", workspaceId);
     if (error) return toast.error(error.message);
     load();
   };
@@ -95,12 +101,7 @@ export function ProjectsPanel({ userId, workspaceId }: { userId: string; workspa
                 <SelectItem value="done">Concluído</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="h-11"
-            />
+            <ScheduleFields value={schedule} onChange={setSchedule} />
           </div>
           <div className="flex gap-2">
             <Button type="submit">Criar projeto</Button>
@@ -117,38 +118,39 @@ export function ProjectsPanel({ userId, workspaceId }: { userId: string; workspa
           </p>
         )}
         {projects.map((p) => (
-          <ProjectCard key={p.id} project={p} onSaved={load} onDelete={() => remove(p.id)} />
+          <ProjectCard key={p.id} workspaceId={workspaceId} project={p} onSaved={load} onDelete={() => remove(p.id)} />
         ))}
       </div>
     </div>
   );
 }
 
-function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved: () => void; onDelete: () => void }) {
+function ProjectCard({ project, onSaved, onDelete, workspaceId }: { workspaceId: string; project: Project; onSaved: () => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description ?? "");
   const [status, setStatus] = useState<Status>(project.status);
-  const [dueDate, setDueDate] = useState(project.due_date ?? "");
+  const [schedule, setSchedule] = useState(storedSchedule(project.due_date, project.start_time, project.end_time));
   const [saving, setSaving] = useState(false);
 
   const cancel = () => {
     setName(project.name);
     setDescription(project.description ?? "");
     setStatus(project.status);
-    setDueDate(project.due_date ?? "");
+    setSchedule(storedSchedule(project.due_date, project.start_time, project.end_time));
     setEditing(false);
   };
 
   const save = async () => {
     if (!name.trim()) return toast.error("Nome obrigatório");
+    const invalid = scheduleError(schedule); if (invalid) return toast.error(invalid);
     setSaving(true);
     const { error } = await supabase.from("projects").update({
       name: name.trim(),
       description: description.trim() || null,
       status,
-      due_date: dueDate || null,
-    }).eq("id", project.id);
+      due_date: schedule.date || null, ...scheduleColumns(schedule),
+    }).eq("id", project.id).eq("workspace_id", workspaceId);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success("Projeto atualizado");
@@ -158,7 +160,7 @@ function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved
 
   const updateStatusInline = async (s: Status) => {
     setStatus(s);
-    const { error } = await supabase.from("projects").update({ status: s }).eq("id", project.id);
+    const { error } = await supabase.from("projects").update({ status: s }).eq("id", project.id).eq("workspace_id", workspaceId);
     if (error) return toast.error(error.message);
     onSaved();
   };
@@ -177,7 +179,7 @@ function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved
               <SelectItem value="done">Concluído</SelectItem>
             </SelectContent>
           </Select>
-          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="h-10" />
+          <ScheduleFields value={schedule} onChange={setSchedule} />
         </div>
         <div className="flex gap-2 pt-1">
           <Button onClick={save} disabled={saving} size="sm">{saving ? "Salvando…" : "Salvar"}</Button>
@@ -191,13 +193,14 @@ function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved
     <div className="group border border-border p-5 rounded-md hover:border-foreground/40 transition">
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-display text-2xl leading-tight">{project.name}</h3>
-        <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-muted-foreground hover:text-foreground" aria-label="Editar projeto">
+        <div className="flex items-center gap-3">
+          {project.due_date && <AddToCalendar event={scheduleEvent(project.name, storedSchedule(project.due_date, project.start_time, project.end_time), project.description ?? "")} />}
+          <Button size="icon" variant="ghost" onClick={() => setEditing(true)} className="text-muted-foreground hover:text-foreground" aria-label="Editar projeto">
             <Pencil className="h-4 w-4" />
-          </button>
-          <button onClick={() => { if (confirm("Excluir este projeto?")) onDelete(); }} className="text-muted-foreground hover:text-destructive" aria-label="Excluir projeto">
+          </Button>
+          <Button size="icon" variant="ghost" onClick={() => { if (confirm("Excluir este projeto?")) onDelete(); }} className="text-muted-foreground hover:text-destructive" aria-label="Excluir projeto">
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
       {project.description && (
@@ -216,7 +219,7 @@ function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved
         </Select>
         {project.due_date && (
           <Badge variant="outline" className="text-xs font-normal">
-            Prazo: {new Date(project.due_date).toLocaleDateString("pt-BR")}
+            {scheduleLabel(storedSchedule(project.due_date, project.start_time, project.end_time))}
           </Badge>
         )}
         <span className="sr-only">{STATUS_LABEL[status]}</span>

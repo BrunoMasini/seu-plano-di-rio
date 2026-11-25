@@ -60,9 +60,11 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          end_time: string | null
           horizon: Database["public"]["Enums"]["goal_horizon"]
           id: string
           progress: number
+          start_time: string | null
           target_date: string | null
           title: string
           user_id: string
@@ -71,9 +73,11 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          end_time?: string | null
           horizon?: Database["public"]["Enums"]["goal_horizon"]
           id?: string
           progress?: number
+          start_time?: string | null
           target_date?: string | null
           title: string
           user_id: string
@@ -82,9 +86,11 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          end_time?: string | null
           horizon?: Database["public"]["Enums"]["goal_horizon"]
           id?: string
           progress?: number
+          start_time?: string | null
           target_date?: string | null
           title?: string
           user_id?: string
@@ -143,8 +149,10 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string | null
+          end_time: string | null
           id: string
           name: string
+          start_time: string | null
           status: Database["public"]["Enums"]["project_status"]
           updated_at: string
           user_id: string
@@ -154,8 +162,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          end_time?: string | null
           id?: string
           name: string
+          start_time?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
           user_id: string
@@ -165,8 +175,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          end_time?: string | null
           id?: string
           name?: string
+          start_time?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
           user_id?: string
@@ -184,8 +196,10 @@ export type Database = {
       }
       reminders: {
         Row: {
+          all_day: boolean
           created_at: string
           done: boolean
+          end_at: string | null
           id: string
           remind_at: string
           title: string
@@ -193,8 +207,10 @@ export type Database = {
           workspace_id: string | null
         }
         Insert: {
+          all_day?: boolean
           created_at?: string
           done?: boolean
+          end_at?: string | null
           id?: string
           remind_at: string
           title: string
@@ -202,8 +218,10 @@ export type Database = {
           workspace_id?: string | null
         }
         Update: {
+          all_day?: boolean
           created_at?: string
           done?: boolean
+          end_at?: string | null
           id?: string
           remind_at?: string
           title?: string
@@ -225,9 +243,11 @@ export type Database = {
           completed: boolean
           created_at: string
           due_date: string | null
+          end_time: string | null
           id: string
           notes: string | null
           project_id: string | null
+          start_time: string | null
           title: string
           user_id: string
           workspace_id: string | null
@@ -236,9 +256,11 @@ export type Database = {
           completed?: boolean
           created_at?: string
           due_date?: string | null
+          end_time?: string | null
           id?: string
           notes?: string | null
           project_id?: string | null
+          start_time?: string | null
           title: string
           user_id: string
           workspace_id?: string | null
@@ -247,9 +269,11 @@ export type Database = {
           completed?: boolean
           created_at?: string
           due_date?: string | null
+          end_time?: string | null
           id?: string
           notes?: string | null
           project_id?: string | null
+          start_time?: string | null
           title?: string
           user_id?: string
           workspace_id?: string | null

@@ -10,7 +10,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin" }] }),
+  head: () => ({ meta: [
+    { title: "Administração — North Note" },
+    { name: "description", content: "Portal de administração das configurações do North Note." },
+    { property: "og:title", content: "Administração — North Note" },
+    { property: "og:description", content: "Gerencie a identidade e os rótulos do North Note." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminPage,
 });
 
