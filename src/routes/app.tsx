@@ -30,6 +30,12 @@ function AppPage() {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando…</div>;
   }
 
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const rawName = String(meta["full_name"] || meta["name"] || "").trim();
+  const firstName = rawName.split(" ")[0] ?? "";
+  const greeting = firstName
+    ? `${settings.greeting.replace(/[.!]\s*$/, "")}, ${firstName}.`
+    : settings.greeting;
   const today = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
   return (
@@ -48,7 +54,7 @@ function AppPage() {
 
       <main className="mx-auto max-w-5xl px-6 py-12">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{today}</p>
-        <h1 className="mt-3 font-display text-5xl md:text-6xl">{settings.greeting}</h1>
+        <h1 className="mt-3 font-display text-5xl md:text-6xl">{greeting}</h1>
         <p className="mt-3 max-w-xl text-muted-foreground">{settings.tagline}</p>
 
         <Tabs defaultValue="tasks" className="mt-12">

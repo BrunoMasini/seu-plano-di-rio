@@ -22,6 +22,7 @@ export const Route = createFileRoute("/definir-senha")({
 
 function SetPasswordPage() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ function SetPasswordPage() {
     e.preventDefault();
     if (password !== confirm) return toast.error("As senhas não coincidem");
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await supabase.auth.updateUser({ password, data: { full_name: name.trim() } });
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Senha criada! Bem-vindo.");
@@ -46,6 +47,10 @@ function SetPasswordPage() {
         <h1 className="font-display text-5xl">Crie sua senha</h1>
         <p className="mt-2 text-muted-foreground">Você usará esta senha junto com seu email para entrar.</p>
         <form onSubmit={submit} className="mt-8 space-y-4">
+          <div>
+            <Label htmlFor="name">Seu nome</Label>
+            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5 h-11" />
+          </div>
           <div>
             <Label htmlFor="pw">Nova senha</Label>
             <Input id="pw" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5 h-11" />
