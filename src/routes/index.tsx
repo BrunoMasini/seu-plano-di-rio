@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Compass, GraduationCap, Briefcase, Home, Check, Star } from "lucide-react";
+import { Compass, GraduationCap, Briefcase, Home, Check, Star, Mail } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SUPPORT_EMAIL } from "@/components/SupportDialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -121,8 +122,14 @@ function Landing() {
       </main>
 
       <footer className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} North Note
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-sm text-muted-foreground">
+          <span>© {new Date().getFullYear()} North Note</span>
+          <a
+            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("North Note — ajuda ou sugestão")}`}
+            className="inline-flex items-center gap-2 hover:text-foreground transition"
+          >
+            <Mail className="h-4 w-4" /> Suporte e sugestões: {SUPPORT_EMAIL}
+          </a>
         </div>
       </footer>
     </div>

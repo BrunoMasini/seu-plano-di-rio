@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Mail } from "lucide-react";
+import { SUPPORT_EMAIL } from "@/components/SupportDialog";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Entrar — North Note" }] }),
@@ -105,6 +107,15 @@ function LoginPage() {
             Esqueci minha senha
           </button>
         )}
+
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          <a
+            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("North Note — ajuda ou sugestão")}`}
+            className="inline-flex items-center gap-2 underline-offset-4 hover:text-foreground hover:underline"
+          >
+            <Mail className="h-4 w-4" /> Precisa de ajuda? Fale com o suporte
+          </a>
+        </p>
       </main>
     </div>
   );
