@@ -66,6 +66,7 @@ export type Database = {
           target_date: string | null
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -76,6 +77,7 @@ export type Database = {
           target_date?: string | null
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -86,8 +88,17 @@ export type Database = {
           target_date?: string | null
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "goals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notes: {
         Row: {
@@ -97,6 +108,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           content?: string | null
@@ -105,6 +117,7 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           content?: string | null
@@ -113,8 +126,17 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -126,6 +148,7 @@ export type Database = {
           status: Database["public"]["Enums"]["project_status"]
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -136,6 +159,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -146,8 +170,17 @@ export type Database = {
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reminders: {
         Row: {
@@ -157,6 +190,7 @@ export type Database = {
           remind_at: string
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -165,6 +199,7 @@ export type Database = {
           remind_at: string
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -173,8 +208,17 @@ export type Database = {
           remind_at?: string
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reminders_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -186,6 +230,7 @@ export type Database = {
           project_id: string | null
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           completed?: boolean
@@ -196,6 +241,7 @@ export type Database = {
           project_id?: string | null
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           completed?: boolean
@@ -206,6 +252,7 @@ export type Database = {
           project_id?: string | null
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -213,6 +260,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -238,6 +292,27 @@ export type Database = {
         }
         Relationships: []
       }
+      workspaces: {
+        Row: {
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["workspace_kind"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["workspace_kind"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["workspace_kind"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -255,6 +330,7 @@ export type Database = {
       app_role: "admin" | "user"
       goal_horizon: "short" | "medium" | "long"
       project_status: "active" | "paused" | "done"
+      workspace_kind: "student" | "professional" | "daily"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -385,6 +461,7 @@ export const Constants = {
       app_role: ["admin", "user"],
       goal_horizon: ["short", "medium", "long"],
       project_status: ["active", "paused", "done"],
+      workspace_kind: ["student", "professional", "daily"],
     },
   },
 } as const

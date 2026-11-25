@@ -23,7 +23,7 @@ const STATUS_LABEL: Record<Status, string> = {
   done: "Concluído",
 };
 
-export function ProjectsPanel({ userId }: { userId: string }) {
+export function ProjectsPanel({ userId, workspaceId }: { userId: string; workspaceId: string }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -36,19 +36,21 @@ export function ProjectsPanel({ userId }: { userId: string }) {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
+      .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
     else setProjects((data as Project[]) ?? []);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [workspaceId]);
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
     const { error } = await supabase.from("projects").insert({
       user_id: userId,
+      workspace_id: workspaceId,
       name: name.trim(),
       description: description.trim() || null,
       status,
@@ -189,11 +191,11 @@ function ProjectCard({ project, onSaved, onDelete }: { project: Project; onSaved
     <div className="group border border-border p-5 rounded-md hover:border-foreground/40 transition">
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-display text-2xl leading-tight">{project.name}</h3>
-        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+        <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-muted-foreground hover:text-foreground" aria-label="Editar projeto">
             <Pencil className="h-4 w-4" />
           </button>
-          <button onClick={onDelete} className="text-muted-foreground hover:text-destructive" aria-label="Excluir projeto">
+          <button onClick={() => { if (confirm("Excluir este projeto?")) onDelete(); }} className="text-muted-foreground hover:text-destructive" aria-label="Excluir projeto">
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
