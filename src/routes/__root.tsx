@@ -1,3 +1,4 @@
+import { applyStoredTheme } from "@/components/ThemeToggle";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
@@ -105,6 +106,7 @@ function AuthSync() {
 }
 
 function RootComponent() {
+  useEffect(() => { applyStoredTheme(); }, []);
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>

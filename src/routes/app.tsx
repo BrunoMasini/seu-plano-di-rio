@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -97,6 +98,7 @@ function AppPage() {
             {isAdmin && (
               <Link to="/admin" className="text-xs uppercase tracking-[0.25em] text-muted-foreground hover:text-foreground transition">Admin</Link>
             )}
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => supabase.auth.signOut()}>Sair</Button>
           </div>
         </div>
